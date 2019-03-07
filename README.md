@@ -13,6 +13,9 @@ Small set shell scripts for Docker
 
 ## Install
 
+In the scripts, replace `gnome-terminal` with the one you have installed by default. 
+And if you do not have `zsh` then replace with `bash`.
+
 In the launch shortcut file `*.desktop` replace `Icon=docker-symbolic` and `Name[ru]=` with your own.
 
 * `git clone git: //github.com/webmastak/shell-scripts-for-docker`
