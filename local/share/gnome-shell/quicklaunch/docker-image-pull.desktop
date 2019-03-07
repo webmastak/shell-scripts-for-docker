@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Docker Pull Image
+Comment=Docker Image Pull
+Icon=docker-symbolic
+Exec=pulldocker-image
+Terminal=false
+Type=Application
+Name[ru]=Установить Docker образ

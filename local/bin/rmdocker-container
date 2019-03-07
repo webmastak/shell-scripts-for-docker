@@ -1,0 +1,10 @@
+#!/bin/bash 
+RADIOLIST="`docker ps -a --format "FALSE {{.Names}}"`"
+if ! [ -n $RADIOLIST ]; then
+CONTAINER=$(zenity --list --radiolist --title "Удалить Docker контейнер" --column "Pick" --column "Docker Container" --width=260 --height=240 --separator="\n" $RADIOLIST) 
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+gnome-terminal -- zsh -c "docker rm --force $CONTAINER"
+fi
+else
+zenity --error --text="Нет Docker контейнеров" --no-wrap
+fi

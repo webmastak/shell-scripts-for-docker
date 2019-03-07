@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Docker Container
+Comment=Docker Image Container
+Icon=docker-symbolic
+Exec=rundocker-container
+Terminal=false
+Type=Application
+Name[ru]=Создать Docker контейнер
