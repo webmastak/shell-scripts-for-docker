@@ -7,10 +7,12 @@ Shell scripts utilit for Docker
 ![scrinshot 3](https://github.com/webmastak/shell-scripts-for-docker/blob/master/3.png)
 ![scrinshot 4](https://github.com/webmastak/shell-scripts-for-docker/blob/master/4.png)
 
+
 ## Dependencies
 
   * Have dependence `zenity`
   * For Gnome [quicklaunch](https://extensions.gnome.org/extension/37/quicklaunch)
+
 
 ## Install
 
@@ -22,10 +24,23 @@ In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symboli
 
 * `git clone git: //github.com/webmastak/shell-scripts-for-docker`
 * `cd shell-scripts-for-docker`
-* `cp ~/shell-scripts-for-docker/local/bin/* ~/.local/bin/*`
+* `cp ~/shell-scripts-for-docker/local/bin/docker-utilit ~/.local/bin/docker-utilit`
 * For Gnome `cp ~/shell-scripts-for-docker/local/share/gnome-shell/quicklaunch/docker-utilit.desktop ~/.local/share/gnome-shell/quicklaunch/docker-utilit.desktop`
 * For Gnome `Alt+F2 restart shell`
 * `enjoy`
+
+
+## Usage
+
+Usage: docker-utilit [options]
+
+Options:
+	**-h**,  **--help**    shows this help
+	**-r**,  **--run**     run container
+	**-rc**, **--rmc**     delete container
+	**-ri**, **--rmi**     delete image
+	**-p**,  **--pull**    pull image
+
 
 ## Contributing
 

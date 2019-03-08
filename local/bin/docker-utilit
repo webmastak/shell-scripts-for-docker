@@ -1,8 +1,81 @@
 #!/bin/bash 
+
+PROGNAME=${0##*/}
+
+usage()
+{
+cat <<EO
+Usage: $PROGNAME [options]
+
+Script utilit for Docker.
+
+Options:
+EO
+cat <<EO | column -s\& -t
+	-h,  --help & shows this help
+	-r,  --run  & run container
+	-rc, --rmc  & delete container
+	-ri, --rmi  & delete image
+	-p,  --pull & pull image
+EO
+}
+
+case $1 in
+	-h|--help)
+	usage
+	exit 0
+		;;
+	-r|--run)
+LIST="`docker images --format "{{.Repository}}"`"
+if ! [ -z $LIST ]; then
+IMAGE=$(zenity --list --hide-header --title "Создать Docker контейнер" \
+       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
+if [ $? -eq 0 -a -n $IMAGE ]; then
+gnome-terminal -- zsh -c "docker run -it $IMAGE"
+fi
+else
+zenity --error --text="Нет Docker образов" --no-wrap
+fi
+		;;
+	-rc|--rmc)
+LIST="`docker ps -a --format "{{.Names}}"`"
+if ! [ -z $LIST ]; then
+CONTAINER=$(zenity --list --hide-header --title "Удалить Docker контейнер" \
+           --text="Выберите Docker контейнер:" --column "Docker Container" --width=230 --height=185 $LIST)
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+gnome-terminal -- zsh -c "docker rm --force $CONTAINER"
+fi
+else
+zenity --error --text="Нет Docker контейнеров" --no-wrap
+fi
+		;;
+	-ri|--rmi)
+LIST="`docker images --format "{{.Repository}}"`"
+if ! [ -z $LIST ]; then
+IMAGE=$(zenity --list --hide-header --title "Удалить Docker образ" \
+       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
+if [ $? -eq 0 -a -n $IMAGE ]; then
+gnome-terminal -- zsh -c "docker rmi $IMAGE"
+fi
+else
+zenity --error --text="Нет Docker образов" --no-wrap
+fi
+		;;
+	-p|--pull)
+IMAGE=$(zenity --entry --title "Установить Docker образ" --text="Docker образ:" \
+       --width=230 --height=80  --entry-text="") 
+if [ $? -eq 0 -a -n $IMAGE ]; then
+gnome-terminal -- zsh -c "docker pull $IMAGE; exec zsh"
+fi
+		;;
+	*)
 UTIL=$(zenity --list --hide-column=1 --hide-header --title="Docker утилиты" --text="Выберите утилиту:" \
-      --column="Exec" --column="Утилита" --width=230 --height=185 \
-      rundocker-container "	Создать контейнер" \
-      rmdocker-container "	Удалить контейнер" \
-      deletedocker-image "	Удалить образ" \
-      pulldocker-image "	Установить образ")
+      --column="Command" --column="Утилита" --width=230 --height=185 \
+      "$PROGNAME --run" "	Создать контейнер" \
+      "$PROGNAME --rmc" "	Удалить контейнер" \
+      "$PROGNAME --rmi" "	Удалить образ" \
+      "$PROGNAME --pull" "	Установить образ")
 exec $UTIL
+		;;		
+esac
+shift
