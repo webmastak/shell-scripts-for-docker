@@ -1,7 +1,8 @@
 #!/bin/bash 
-RADIOLIST="`docker images --format "FALSE {{.Repository}}"`"
-if ! [ -n $RADIOLIST ]; then
-IMAGE=$(zenity --list --radiolist --title "Создать Docker контейнер" --column "Pick" --column "Docker Image" --width=260 --height=240 --separator="\n" $RADIOLIST) 
+LIST="`docker images --format "{{.Repository}}"`"
+if ! [ -z $LIST ]; then
+IMAGE=$(zenity --list --hide-header --title "Создать Docker контейнер" \
+       --text="Выберите Docker образ:" --column "Docker Image" --width=240 --height=240 $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
 gnome-terminal -- zsh -c "docker run -it $IMAGE"
 fi
