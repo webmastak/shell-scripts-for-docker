@@ -32,14 +32,14 @@ In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symboli
 
 ## Usage
 
-Usage: docker-utilit [options]
+Usage: `docker-utilit [options]`
 
 Options:
-	**-h**,  **--help**    shows this help
-	**-r**,  **--run**     run container
-	**-rc**, **--rmc**     delete container
-	**-ri**, **--rmi**     delete image
-	**-p**,  **--pull**    pull image
+*	`-h,  --help`  shows this help
+*	`-r,  --run`   run container
+*	`-rc, --rmc`   delete container
+*	`-ri, --rmi`   delete image
+*	`-p,  --pull`  pull image
 
 
 ## Contributing
