@@ -1,6 +1,6 @@
 #!/bin/bash 
 UTIL=$(zenity --list --hide-column=1 --hide-header --title="Docker утилиты" --text="Выберите утилиту:" \
-      --column="Exec" --column="Утилита" --width=240 --height=240 \
+      --column="Exec" --column="Утилита" --width=230 --height=185 \
       rundocker-container "	Создать контейнер" \
       rmdocker-container "	Удалить контейнер" \
       deletedocker-image "	Удалить образ" \
