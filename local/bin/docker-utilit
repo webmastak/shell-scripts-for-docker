@@ -4,4 +4,3 @@ UTIL=$(zenity --list --radiolist --hide-column=2 --title="Docker утилиты"
       TRUE rundocker-container "Создать контейнер" FALSE rmdocker-container "Удалить контейнер" \
       FALSE deletedocker-image "Удалить образ" FALSE pulldocker-image "Установить образ")
 exec $UTIL
- 
