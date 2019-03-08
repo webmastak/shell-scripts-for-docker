@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Docker Utilit
+Comment=Docker Utilit
+Icon=docker-symbolic
+Exec=docker-utilit
+Terminal=false
+Type=Application
+Name[en]=Docker Utilit

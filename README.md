@@ -1,6 +1,6 @@
 # Shell scripts for Docker
 
-Small set shell scripts for Docker
+Shell scripts utilit for Docker
 
 ![scrinshot 1](https://github.com/webmastak/shell-scripts-for-docker/blob/master/1.png)
 ![scrinshot 2](https://github.com/webmastak/shell-scripts-for-docker/blob/master/2.png)
@@ -17,12 +17,12 @@ In the scripts, replace **gnome-terminal** with the one you have installed by de
  
 And if you do not have **zsh** then replace with **bash**.
 
-In the launch shortcut file `*.desktop` replace `Icon=docker-symbolic` and `Name[ru]=` with your own.
+In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symbolic` and `Name[en]=Docker Utilit` with your own.
 
 * `git clone git: //github.com/webmastak/shell-scripts-for-docker`
 * `cd shell-scripts-for-docker`
 * `cp ~/shell-scripts-for-docker/local/bin/* ~/.local/bin/*`
-* For Gnome `cp ~/shell-scripts-for-docker/local/share/gnome-shell/quicklaunch/* ~/.local/share/gnome-shell/quicklaunch/*`
+* For Gnome `cp ~/shell-scripts-for-docker/local/share/gnome-shell/quicklaunch/docker-utilit.desktop ~/.local/share/gnome-shell/quicklaunch/docker-utilit.desktop`
 * For Gnome `Alt+F2 restart shell`
 * `enjoy`
 

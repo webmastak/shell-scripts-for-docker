@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Docker Delete Container
-Comment=Docker Container Delete
-Icon=docker-symbolic
-Exec=rmdocker-container
-Terminal=false
-Type=Application
-Name[ru]=Удалить Docker контейнер

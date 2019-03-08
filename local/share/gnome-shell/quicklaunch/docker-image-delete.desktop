@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Docker Delete Image
-Comment=Docker Image Delete
-Icon=docker-symbolic
-Exec=deletedocker-image
-Terminal=false
-Type=Application
-Name[ru]=Удалить Docker образ

@@ -1,0 +1,7 @@
+#!/bin/bash 
+UTIL=$(zenity --list --radiolist --hide-column=2 --title="Docker утилиты" --text="Выберите утилиту:" \
+      --column="Выбор" --column="Exec" --column="Утилита" --width=260 --height=240 \
+      TRUE rundocker-container "Создать контейнер" FALSE rmdocker-container "Удалить контейнер" \
+      FALSE deletedocker-image "Удалить образ" FALSE pulldocker-image "Установить образ")
+exec $UTIL
+ 
