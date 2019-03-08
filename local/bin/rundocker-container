@@ -2,7 +2,7 @@
 LIST="`docker images --format "{{.Repository}}"`"
 if ! [ -z $LIST ]; then
 IMAGE=$(zenity --list --hide-header --title "Создать Docker контейнер" \
-       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=200 $LIST) 
+       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
 gnome-terminal -- zsh -c "docker run -it $IMAGE"
 fi

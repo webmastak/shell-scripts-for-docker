@@ -2,7 +2,7 @@
 LIST="`docker ps -a --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$(zenity --list --hide-header --title "Удалить Docker контейнер" \
-           --text="Выберите Docker контейнер:" --column "Docker Container" --width=230 --height=200 $LIST)
+           --text="Выберите Docker контейнер:" --column "Docker Container" --width=230 --height=185 $LIST)
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 gnome-terminal -- zsh -c "docker rm --force $CONTAINER"
 fi

@@ -1,5 +1,5 @@
 #!/bin/bash 
-IMAGE=$(zenity --entry --title "Установить Docker образ" --text="Docker образ:" --width=240 --height=80  --entry-text="") 
+IMAGE=$(zenity --entry --title "Установить Docker образ" --text="Docker образ:" --width=230 --height=80  --entry-text="") 
 if [ $? -eq 0 -a -n $IMAGE ]; then
 gnome-terminal -- zsh -c "docker pull $IMAGE; exec zsh"
 fi
