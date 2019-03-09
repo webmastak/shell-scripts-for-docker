@@ -1,6 +1,7 @@
 #!/bin/bash 
 
 shell="zsh"
+TERMINAL="gnome-terminal"
 PROGNAME=${0##*/}
 
 usage()
@@ -32,7 +33,7 @@ if ! [ -z $LIST ]; then
 IMAGE=$(zenity --list --hide-header --title "Создать Docker контейнер" \
        --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-gnome-terminal -- $shell -c "docker run -it $IMAGE"
+$TERMINAL -- $shell -c "docker run -it $IMAGE"
 fi
 else
 zenity --error --text="Нет Docker образов" --no-wrap
@@ -44,7 +45,7 @@ if ! [ -z $LIST ]; then
 CONTAINER=$(zenity --list --hide-header --title "Удалить Docker контейнер" \
            --text="Выберите Docker контейнер:" --column "Docker Container" --width=230 --height=185 $LIST)
 if [ $? -eq 0 -a -n $CONTAINER ]; then
-gnome-terminal -- $shell -c "docker rm --force $CONTAINER"
+$TERMINAL -- $shell -c "docker rm --force $CONTAINER"
 fi
 else
 zenity --error --text="Нет Docker контейнеров" --no-wrap
@@ -56,7 +57,7 @@ if ! [ -z $LIST ]; then
 IMAGE=$(zenity --list --hide-header --title "Удалить Docker образ" \
        --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-gnome-terminal -- $shell -c "docker rmi $IMAGE"
+$TERMINAL -- $shell -c "docker rmi $IMAGE"
 fi
 else
 zenity --error --text="Нет Docker образов" --no-wrap
@@ -66,7 +67,7 @@ fi
 IMAGE=$(zenity --entry --title "Установить Docker образ" --text="Docker образ:" \
        --width=230 --height=80  --entry-text="") 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-gnome-terminal -- $shell -c "docker pull $IMAGE; exec $shell"
+$TERMINAL -- $shell -c "docker pull $IMAGE; exec $shell"
 fi
 		;;
 	*)
