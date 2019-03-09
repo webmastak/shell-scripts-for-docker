@@ -16,9 +16,9 @@ Shell scripts utilit for Docker
 
 ## Install
 
-In the scripts, replace **gnome-terminal** with the one you have installed by default.
+In the **docker-utilit** script replace `TERMINAL="gnome-terminal"` with the one you have installed by default.
  
-And if you do not have **zsh** then replace with **bash**.
+And if you do not have **zsh** then replace `shell="zsh"` with **bash**.
 
 In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symbolic` and `Name[en]=Docker Utilit` with your own.
 
