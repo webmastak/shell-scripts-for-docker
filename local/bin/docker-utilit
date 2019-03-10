@@ -1,8 +1,10 @@
 #!/bin/bash 
- 
-SHELL="exec zsh"
-TERMINAL="gnome-terminal -- zsh -c"
+
 PROGNAME=${0##*/}
+TERMINAL="gnome-terminal -- zsh -c"
+WINDOW_SIZES="--width=230 --height=200"
+ICON="$HOME/.local/share/icons/docker.png"
+ZENITY="zenity --list --hide-header --window-icon=$ICON"
 
 usage()
 {
@@ -14,11 +16,15 @@ Script utilit for Docker.
 Options:
 EO
 cat <<EO | column -s\& -t
-	-h,  --help & shows this help
-	-r,  --run  & run container
-	-rc, --rmc  & delete container
-	-ri, --rmi  & delete image
-	-p,  --pull & pull image
+	-h,  --help  & shows this help
+	-c,  --con   & start or join container
+	-s,  --stop  & stop containers
+	-up, --renew & resume containers
+	-p,  --pause & pause containers
+	-r,  --run   & run container
+	-rc, --rmc   & delete container
+	-ri, --rmi   & delete image
+	-pu, --pull  & pull image
 EO
 }
 
@@ -30,53 +36,114 @@ case $1 in
 	-r|--run)
 LIST="`docker images --format "{{.Repository}}"`"
 if ! [ -z $LIST ]; then
-IMAGE=$(zenity --list --hide-header --title "Создать Docker контейнер" \
-       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
+IMAGE=$($ZENITY --title "Create Docker Container" --text="Choose Docker image:" \
+       --column "Docker Image" $WINDOW_SIZES $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-$TERMINAL "docker run -it $IMAGE"
+CONTNAME=`echo "$IMAGE" | sed 's|.*\/\(.*\)|\1|' | tr '-' '_'`
+$TERMINAL "docker run -it --name $CONTNAME $IMAGE"
 fi
 else
-zenity --error --text="Нет Docker образов" --no-wrap
+zenity --error --text="No Docker Images" --no-wrap
 fi
 		;;
+	-c|--con)
+SHELL="`docker ps -a --format "{{.Command}}"`"	
+LIST="`docker ps -a --format "{{.Names}}"`"
+if ! [ -z $LIST ]; then
+CONTAINER=$($ZENITY --title "Connect to container" --text="Choose a Docker Container:" \
+           --column "Docker Container" $WINDOW_SIZES $LIST)
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+STATUS="`docker inspect $CONTAINER --format "{{.State.Status}}"`"
+if [ "$STATUS" = "running" ]; then $TERMINAL "docker exec -it $CONTAINER $SHELL"; fi
+if [ "$STATUS" = "exited" ]; then $TERMINAL "docker start -ai $CONTAINER"; fi
+fi
+else
+zenity --error --text="No Docker Containers" --no-wrap
+fi
+		;;
+	-s|--stop)	
+LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
+if ! [ -z $LIST ]; then
+CONTAINER=$($ZENITY --title "Stop container" --text="Choose a Docker Container:" \
+           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+exec docker stop $CONTAINER
+fi
+else
+zenity --error --text="No containers running" --no-wrap
+fi
+		;;	
+	-p|--pause)	
+LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
+if ! [ -z $LIST ]; then
+CONTAINER=$($ZENITY --title "Pause container" --text="Choose a Docker Container:" \
+           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+exec docker pause $CONTAINER
+fi
+else
+zenity --error --text="No containers running" --no-wrap
+fi
+		;;	
+	-up|--renew)	
+LIST="`docker ps -a -f status=paused --format "{{.Names}}"`"
+if ! [ -z $LIST ]; then
+CONTAINER=$($ZENITY --title "Resume containers" --text="Choose a Docker Container:" \
+           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+if [ $? -eq 0 -a -n $CONTAINER ]; then
+CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+exec docker unpause $CONTAINER
+fi
+else
+zenity --error --text="No pause containers" --no-wrap
+fi
+		;;							
 	-rc|--rmc)
 LIST="`docker ps -a --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
-CONTAINER=$(zenity --list --hide-header --title "Удалить Docker контейнер" \
-           --text="Выберите Docker контейнер:" --column "Docker Container" --width=230 --height=185 $LIST)
+CONTAINER=$($ZENITY --title "Remove Docker Container" --text="Choose a Docker Container:" \
+           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
 if [ $? -eq 0 -a -n $CONTAINER ]; then
-$TERMINAL "docker rm --force $CONTAINER"
+CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+exec docker rm --force $CONTAINER
 fi
 else
-zenity --error --text="Нет Docker контейнеров" --no-wrap
+zenity --error --text="No Docker Containers" --no-wrap
 fi
 		;;
 	-ri|--rmi)
 LIST="`docker images --format "{{.Repository}}"`"
 if ! [ -z $LIST ]; then
-IMAGE=$(zenity --list --hide-header --title "Удалить Docker образ" \
-       --text="Выберите Docker образ:" --column "Docker Image" --width=230 --height=185 $LIST) 
+IMAGE=$($ZENITY --title "Delete Docker image" --text="Choose Docker image:" \
+       --column "Docker Image" --multiple --separator="#" $WINDOW_SIZES $LIST) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-$TERMINAL "docker rmi $IMAGE"
+IMAGE=`echo "$IMAGE" | tr '#' ' '`
+exec docker rmi $IMAGE
 fi
 else
-zenity --error --text="Нет Docker образов" --no-wrap
+zenity --error --text="No Docker Images" --no-wrap
 fi
 		;;
-	-p|--pull)
-IMAGE=$(zenity --entry --title "Установить Docker образ" --text="Docker образ:" \
-       --width=230 --height=80  --entry-text="") 
+	-pu|--pull)
+IMAGE=$(zenity --entry --title "Install Docker image" --text="Docker image:" \
+       --entry-text="" --window-icon=$ICON --width=230 --height=80) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
-$TERMINAL "docker pull $IMAGE; $SHELL"
+exec docker pull $IMAGE
 fi
 		;;
 	*)
-UTIL=$(zenity --list --hide-column=1 --hide-header --title="Docker утилиты" --text="Выберите утилиту:" \
-      --column="Command" --column="Утилита" --width=230 --height=185 \
-      "$PROGNAME --run" "	Создать контейнер" \
-      "$PROGNAME --rmc" "	Удалить контейнер" \
-      "$PROGNAME --rmi" "	Удалить образ" \
-      "$PROGNAME --pull" "	Установить образ")
+UTIL=$($ZENITY --hide-column=1 --title="Docker utilities" --text="Select utility:" \
+      --column="Command" --column="Utility" --width=230 --height=288 \
+      "$PROGNAME --con" "	Connect" \
+      "$PROGNAME --stop" "	Stop" \
+      "$PROGNAME --renew" "	Resume" \
+      "$PROGNAME --pause" "	Suspend" \
+      "$PROGNAME --run" "	Create container" \
+      "$PROGNAME --rmc" "	Remove container" \
+      "$PROGNAME --rmi" "	Delete image" \
+      "$PROGNAME --pull" "	Install image")
 exec $UTIL
 		;;		
 esac

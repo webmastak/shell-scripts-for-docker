@@ -2,11 +2,15 @@
 
 Shell scripts utilit for Docker
 
-![scrinshot 1](https://github.com/webmastak/shell-scripts-for-docker/blob/master/1.png)
-![scrinshot 2](https://github.com/webmastak/shell-scripts-for-docker/blob/master/2.png)
-![scrinshot 3](https://github.com/webmastak/shell-scripts-for-docker/blob/master/3.png)
-![scrinshot 4](https://github.com/webmastak/shell-scripts-for-docker/blob/master/4.png)
-
+![scrinshot 1](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/1.png)
+![scrinshot 2](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/2.png)
+![scrinshot 3](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/3.png)
+![scrinshot 4](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/4.png)
+![scrinshot 5](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/5.png)
+![scrinshot 6](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/6.png)
+![scrinshot 7](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/7.png)
+![scrinshot 8](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/8.png)
+![scrinshot 9](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/9.png)
 
 ## Dependencies
 
@@ -18,12 +22,12 @@ Shell scripts utilit for Docker
 
 In the **docker-utilit** script, in variable **TERMINAL** replace **gnome-terminal** the one you set by default.
  
-And if you do not have **zsh** then in variables **SHELL** and **TERMINAL** replace **zsh** with **bash**.
-
-In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symbolic` and `Name[en]=Docker Utilit` with your own.
+And if you do not have **zsh** then in variable **TERMINAL** replace **zsh** with **bash**.
 
 * `git clone git: //github.com/webmastak/shell-scripts-for-docker`
 * `cd shell-scripts-for-docker`
+* `cp ~/shell-scripts-for-docker/local/share/icons/docker.png ~/.local/share/icons/docker.png`
+* `cp ~/shell-scripts-for-docker/local/share/icons/docker-symbolic.svg ~/.local/share/icons/docker-symbolic.svg`
 * `cp ~/shell-scripts-for-docker/local/bin/docker-utilit ~/.local/bin/docker-utilit`
 * For Gnome `cp ~/shell-scripts-for-docker/local/share/gnome-shell/quicklaunch/docker-utilit.desktop ~/.local/share/gnome-shell/quicklaunch/docker-utilit.desktop`
 * For Gnome `Alt+F2 restart shell`
@@ -35,12 +39,15 @@ In the launch shortcut file `docker-utilit.desktop` replace `Icon=docker-symboli
 Usage: `docker-utilit [options]`
 
 Options:
-*	`-h,  --help`  shows this help
-*	`-r,  --run`   run container
-*	`-rc, --rmc`   delete container
-*	`-ri, --rmi`   delete image
-*	`-p,  --pull`  pull image
-
+*	-h,  --help    shows this help
+*	-c,  --con     start or join container
+*	-s,  --stop    stop containers
+*	-up, --renew   resume containers
+*	-p,  --pause   pause containers
+*	-r,  --run     run container
+*	-rc, --rmc     delete container
+*	-ri, --rmi     delete image
+*	-pu, --pull    pull image
 
 ## Contributing
 
