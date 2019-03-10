@@ -2,6 +2,7 @@
 
 Shell scripts utilit for Docker
 
+![scrinshot 0](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/0.png)
 ![scrinshot 1](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/1.png)
 ![scrinshot 2](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/2.png)
 ![scrinshot 3](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/3.png)
@@ -10,7 +11,6 @@ Shell scripts utilit for Docker
 ![scrinshot 6](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/6.png)
 ![scrinshot 7](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/7.png)
 ![scrinshot 8](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/8.png)
-![scrinshot 9](https://github.com/webmastak/shell-scripts-for-docker/blob/master/scrinshots/9.png)
 
 ## Dependencies
 
@@ -39,15 +39,15 @@ And if you do not have **zsh** then in variable **TERMINAL** replace **zsh** wit
 Usage: `docker-utilit [options]`
 
 Options:
-*	-h,  --help    shows this help
-*	-c,  --con     start or join container
-*	-s,  --stop    stop containers
-*	-up, --renew   resume containers
-*	-p,  --pause   pause containers
-*	-r,  --run     run container
-*	-rc, --rmc     delete container
-*	-ri, --rmi     delete image
-*	-pu, --pull    pull image
+*	`-h,  --help`    shows this help
+*	`-c,  --con`     start or join container
+*	`-s,  --stop`    stop containers
+*	`-up, --renew`   resume containers
+*	`-p,  --pause`   pause containers
+*	`-r,  --run`     run container
+*	`-rc, --rmc`     delete container
+*	`-ri, --rmi`     delete image
+*	`-pu, --pull`    pull image
 
 ## Contributing
 
