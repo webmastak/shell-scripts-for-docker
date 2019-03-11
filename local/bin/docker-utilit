@@ -40,12 +40,14 @@ LIST=`echo -e "$LISTIMAGE\n$CONTAINER" | sort | uniq -u`
 if ! [ -z $LIST ]; then
 IMAGE=$($ZENITY --title "Create container" --text="Choose an image:" \
        --column "Docker Image" $WINDOW_SIZES $LIST) 
+       
 if [ $? -eq 0 -a -n $IMAGE ]; then
 CONTNAME=`echo "$IMAGE" | sed 's|.*\/\(.*\)|\1|' | tr '-' '_'`
 $TERMINAL "docker run -it --name $CONTNAME $IMAGE"
 fi
 else
-zenity --error --text="No images or all already running" --no-wrap
+zenity --error --text="No images or all already running" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;
 	-c|--con)
@@ -54,13 +56,15 @@ LIST="`docker ps -a --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$($ZENITY --title "Connect to Container" --text="Choose a Container:" \
            --column "Docker Container" $WINDOW_SIZES $LIST)
+           
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 STATUS="`docker inspect $CONTAINER --format "{{.State.Status}}"`"
 if [ "$STATUS" = "running" ]; then $TERMINAL "docker exec -it $CONTAINER $SHELL"; fi
 if [ "$STATUS" = "exited" ]; then $TERMINAL "docker start -ai $CONTAINER"; fi
 fi
 else
-zenity --error --text="No containers or everything is paused" --no-wrap
+zenity --error --text="No containers or everything is paused" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;
 	-s|--stop)	
@@ -68,12 +72,14 @@ LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$($ZENITY --title "Stop Container" --text="Choose a Container:" \
            --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+           
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker stop $CONTAINER
 fi
 else
-zenity --error --text="No containers running or everything is paused" --no-wrap
+zenity --error --text="No containers running or everything is paused" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;	
 	-p|--pause)	
@@ -81,12 +87,14 @@ LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$($ZENITY --title "Pause Container" --text="Choose a Container:" \
            --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+           
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker pause $CONTAINER
 fi
 else
-zenity --error --text="No containers running or everything is paused" --no-wrap
+zenity --error --text="No containers running or everything is paused" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;	
 	-up|--renew)	
@@ -94,12 +102,14 @@ LIST="`docker ps -a -f status=paused --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$($ZENITY --title "Resume Containers" --text="Choose a Container:" \
            --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+           
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker unpause $CONTAINER
 fi
 else
-zenity --error --text="No containers suspended" --no-wrap
+zenity --error --text="No containers suspended" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;							
 	-rc|--rmc)
@@ -107,12 +117,14 @@ LIST="`docker ps -a --format "{{.Names}}"`"
 if ! [ -z $LIST ]; then
 CONTAINER=$($ZENITY --title "Remove Container" --text="Choose a Container:" \
            --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)
+           
 if [ $? -eq 0 -a -n $CONTAINER ]; then
 CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker rm --force $CONTAINER
 fi
 else
-zenity --error --text="No Containers" --no-wrap
+zenity --error --text="No Containers" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;
 	-ri|--rmi)
@@ -120,12 +132,14 @@ LIST="`docker images --format "{{.Repository}}"`"
 if ! [ -z $LIST ]; then
 IMAGE=$($ZENITY --title "Delete Image" --text="Choose a Image:" \
        --column "Docker Image" --multiple --separator="#" $WINDOW_SIZES $LIST) 
+       
 if [ $? -eq 0 -a -n $IMAGE ]; then
 IMAGE=`echo "$IMAGE" | tr '#' ' '`
 exec docker rmi $IMAGE
 fi
 else
-zenity --error --text="No Images" --no-wrap
+zenity --error --text="No Images" \
+       --no-wrap --window-icon=$ICON
 fi
 		;;
 	-pu|--pull)
