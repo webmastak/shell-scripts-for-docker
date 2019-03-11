@@ -4,7 +4,8 @@ PROGNAME=${0##*/}
 TERMINAL="gnome-terminal -- zsh -c"
 WINDOW_SIZES="--width=230 --height=200"
 ICON="$HOME/.local/share/icons/docker.png"
-ZENITY="zenity --list --hide-header --window-icon=$ICON"
+NAME="--class=$PROGNAME --name=$PROGNAME"
+ZENITY="zenity $NAME --list --hide-header --window-icon=$ICON"
 
 usage()
 {
@@ -46,11 +47,11 @@ CONTNAME=`echo "$IMAGE" | sed 's|.*\/\(.*\)|\1|' | tr '-' '_'`
 $TERMINAL "docker run -it --name $CONTNAME $IMAGE"
 fi
 else
-zenity --error --text="All Images are running" \
+zenity $NAME --error --text="All Images are running" \
        --no-wrap --window-icon=$ICON
 fi
 else
-zenity --error --text="No Images" \
+zenity $NAME --error --text="No Images" \
        --no-wrap --window-icon=$ICON
 fi
 		;;
@@ -68,11 +69,11 @@ if [ "$STATUS" = "running" ]; then $TERMINAL "docker exec -it $CONTAINER $SHELL"
 if [ "$STATUS" = "exited" ]; then $TERMINAL "docker start -ai $CONTAINER"; fi
 fi
 else
-zenity --error --text="All containers are suspended" \
+zenity $NAME --error --text="All containers are suspended" \
        --no-wrap --window-icon=$ICON
 fi
 else
-zenity --error --text="No containers" \
+zenity $NAME --error --text="No containers" \
        --no-wrap --window-icon=$ICON
 fi
 		;;
@@ -88,11 +89,11 @@ CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker stop $CONTAINER
 fi
 else
-zenity --error --text="No containers running or everything is paused" \
+zenity $NAME --error --text="No containers running or everything is paused" \
        --no-wrap --window-icon=$ICON
 fi
 else
-zenity --error --text="No containers" \
+zenity $NAME --error --text="No containers" \
        --no-wrap --window-icon=$ICON
 fi	
 		;;	
@@ -108,11 +109,11 @@ CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker pause $CONTAINER
 fi
 else
-zenity --error --text="No containers running or everything is paused" \
+zenity $NAME --error --text="No containers running or everything is paused" \
        --no-wrap --window-icon=$ICON
 fi
 else
-zenity --error --text="No containers" \
+zenity $NAME --error --text="No containers" \
        --no-wrap --window-icon=$ICON
 fi
 		;;	
@@ -128,11 +129,11 @@ CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker unpause $CONTAINER
 fi
 else
-zenity --error --text="No containers suspended" \
+zenity $NAME --error --text="No containers suspended" \
        --no-wrap --window-icon=$ICON
 fi
 else
-zenity --error --text="No containers" \
+zenity $NAME --error --text="No containers" \
        --no-wrap --window-icon=$ICON
 fi
 		;;							
@@ -146,7 +147,7 @@ CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
 exec docker rm --force $CONTAINER
 fi
 else
-zenity --error --text="No Containers" \
+zenity $NAME --error --text="No Containers" \
        --no-wrap --window-icon=$ICON
 fi
 		;;
@@ -160,12 +161,12 @@ IMAGE=`echo "$IMAGE" | tr '#' ' '`
 exec docker rmi $IMAGE
 fi
 else
-zenity --error --text="No Images" \
+zenity $NAME --error --text="No Images" \
        --no-wrap --window-icon=$ICON
 fi
 		;;
 	-pu|--pull)
-IMAGE=$(zenity --entry --title "Install Image" --text="Docker Image:" \
+IMAGE=$(zenity $NAME --entry --title "Install Image" --text="Docker Image:" \
        --entry-text="" --window-icon=$ICON --width=230 --height=80) 
 if [ $? -eq 0 -a -n $IMAGE ]; then
 exec docker pull $IMAGE
@@ -182,6 +183,7 @@ UTIL=$($ZENITY --hide-column=1 --title="Docker utilities" --text="Select utility
       "$PROGNAME --rmc" "	Remove container" \
       "$PROGNAME --rmi" "	Delete image" \
       "$PROGNAME --pull" "	Install image")
+      
 exec $UTIL
 		;;		
 esac
