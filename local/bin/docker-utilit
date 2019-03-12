@@ -1,11 +1,14 @@
 #!/bin/bash 
 
 PROGNAME=${0##*/}
+DOCKER="$(which docker)"
 TERMINAL="gnome-terminal -- zsh -c"
-WINDOW_SIZES="--width=230 --height=200"
 ICON="$HOME/.local/share/icons/docker.png"
 NAME="--class=$PROGNAME --name=$PROGNAME"
-ZENITY="zenity $NAME --list --hide-header --window-icon=$ICON"
+ZENITY="zenity $NAME --list --hide-header --window-icon=$ICON --width=230 --height=288"
+ZENITY_ENTRY="zenity $NAME --entry --window-icon=$ICON --width=230 --height=80"
+ZENITY_RUN="zenity $NAME --progress --no-cancel --pulsate --window-icon=$ICON"
+ZENITY_INFO="zenity $NAME --info --no-wrap --window-icon=$ICON"
 
 usage()
 {
@@ -29,152 +32,10 @@ cat <<EO | column -s\& -t
 EO
 }
 
-case $1 in
-	-h|--help)
-	usage
-	exit 0
-		;;
-	-r|--run)
-LISTIMAGE="`docker images --format "{{.Repository}}"`"
-CONTAINER="`docker ps -a --format "{{.Image}}"`"
-LIST=`echo -e "$LISTIMAGE\n$CONTAINER" | sort | uniq -u`  
-if ! [ -z $LISTIMAGE ]; then
-if ! [ -z $LIST ]; then
-IMAGE=$($ZENITY --title "Create Container" --text="Choose an Image:" \
-       --column "Docker Image" $WINDOW_SIZES $LIST)        
-if [ $? -eq 0 -a -n $IMAGE ]; then
-CONTNAME=`echo "$IMAGE" | sed 's|.*\/\(.*\)|\1|' | tr '-' '_'`
-$TERMINAL "docker run -it --name $CONTNAME $IMAGE"
-fi
-else
-zenity $NAME --error --text="All Images are running" \
-       --no-wrap --window-icon=$ICON
-fi
-else
-zenity $NAME --error --text="No Images" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;
-	-c|--con)
-LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
-SHELL="`docker ps -a -f status=running -f status=exited --format "{{.Command}}"`"	
-LIST="`docker ps -a -f status=running -f status=exited --format "{{.Names}}"`"
-if ! [ -z $LIST_ALL ]; then
-if ! [ -z $LIST ]; then
-CONTAINER=$($ZENITY --title "Connect to Container" --text="Choose a Container:" \
-           --column "Docker Container" $WINDOW_SIZES $LIST)          
-if [ $? -eq 0 -a -n $CONTAINER ]; then
-STATUS="`docker inspect $CONTAINER --format "{{.State.Status}}"`"
-if [ "$STATUS" = "running" ]; then $TERMINAL "docker exec -it $CONTAINER $SHELL"; fi
-if [ "$STATUS" = "exited" ]; then $TERMINAL "docker start -ai $CONTAINER"; fi
-fi
-else
-zenity $NAME --error --text="All containers are suspended" \
-       --no-wrap --window-icon=$ICON
-fi
-else
-zenity $NAME --error --text="No containers" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;
-	-s|--stop)	
-LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
-LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
-if ! [ -z $LIST_ALL ]; then
-if ! [ -z $LIST ]; then
-CONTAINER=$($ZENITY --title "Stop Container" --text="Choose a Container:" \
-           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)           
-if [ $? -eq 0 -a -n $CONTAINER ]; then
-CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
-exec docker stop $CONTAINER
-fi
-else
-zenity $NAME --error --text="No containers running or everything is paused" \
-       --no-wrap --window-icon=$ICON
-fi
-else
-zenity $NAME --error --text="No containers" \
-       --no-wrap --window-icon=$ICON
-fi	
-		;;	
-	-p|--pause)	
-LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
-LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
-if ! [ -z $LIST_ALL ]; then
-if ! [ -z $LIST ]; then
-CONTAINER=$($ZENITY --title "Pause Container" --text="Choose a Container:" \
-           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)           
-if [ $? -eq 0 -a -n $CONTAINER ]; then
-CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
-exec docker pause $CONTAINER
-fi
-else
-zenity $NAME --error --text="No containers running or everything is paused" \
-       --no-wrap --window-icon=$ICON
-fi
-else
-zenity $NAME --error --text="No containers" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;	
-	-up|--renew)	
-LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
-LIST="`docker ps -a -f status=paused --format "{{.Names}}"`"
-if ! [ -z $LIST_ALL ]; then
-if ! [ -z $LIST ]; then
-CONTAINER=$($ZENITY --title "Resume Containers" --text="Choose a Container:" \
-           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)          
-if [ $? -eq 0 -a -n $CONTAINER ]; then
-CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
-exec docker unpause $CONTAINER
-fi
-else
-zenity $NAME --error --text="No containers suspended" \
-       --no-wrap --window-icon=$ICON
-fi
-else
-zenity $NAME --error --text="No containers" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;							
-	-rc|--rmc)
-LIST="`docker ps -a --format "{{.Names}}"`"
-if ! [ -z $LIST ]; then
-CONTAINER=$($ZENITY --title "Remove Container" --text="Choose a Container:" \
-           --column "Docker Container" --multiple --separator="#" $WINDOW_SIZES $LIST)           
-if [ $? -eq 0 -a -n $CONTAINER ]; then
-CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
-exec docker rm --force $CONTAINER
-fi
-else
-zenity $NAME --error --text="No Containers" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;
-	-ri|--rmi)
-LIST="`docker images --format "{{.Repository}}"`"
-if ! [ -z $LIST ]; then
-IMAGE=$($ZENITY --title "Delete Image" --text="Choose a Image:" \
-       --column "Docker Image" --multiple --separator="#" $WINDOW_SIZES $LIST)       
-if [ $? -eq 0 -a -n $IMAGE ]; then
-IMAGE=`echo "$IMAGE" | tr '#' ' '`
-exec docker rmi $IMAGE
-fi
-else
-zenity $NAME --error --text="No Images" \
-       --no-wrap --window-icon=$ICON
-fi
-		;;
-	-pu|--pull)
-IMAGE=$(zenity $NAME --entry --title "Install Image" --text="Docker Image:" \
-       --entry-text="" --window-icon=$ICON --width=230 --height=80) 
-if [ $? -eq 0 -a -n $IMAGE ]; then
-exec docker pull $IMAGE
-fi
-		;;
-	*)
+main()
+{
 UTIL=$($ZENITY --hide-column=1 --title="Docker utilities" --text="Select utility:" \
-      --column="Command" --column="Utility" --width=230 --height=288 \
+      --column="Command" --column="Utility" \
       "$PROGNAME --con" "	Connect" \
       "$PROGNAME --stop" "	Stop" \
       "$PROGNAME --renew" "	Resume" \
@@ -182,9 +43,153 @@ UTIL=$($ZENITY --hide-column=1 --title="Docker utilities" --text="Select utility
       "$PROGNAME --run" "	Create container" \
       "$PROGNAME --rmc" "	Remove container" \
       "$PROGNAME --rmi" "	Delete image" \
-      "$PROGNAME --pull" "	Install image")
-      
+      "$PROGNAME --pull" "	Install image")     
 exec $UTIL
-		;;		
-esac
-shift
+}
+
+while true; do
+	case $1 in
+		-h|--help)
+			usage
+			exit 0
+			;;
+		-r|--run)
+			LISTIMAGE="`docker images --format "{{.Repository}}"`"
+			CONTAINER="`docker ps -a --format "{{.Image}}"`"
+			LIST=`echo -e "$LISTIMAGE\n$CONTAINER" | sort | uniq -u`  
+			if ! [ -z $LISTIMAGE ]; then
+			if ! [ -z $LIST ]; then
+			IMAGE=$($ZENITY --title "Create Containerр" --text="Choose an Image:" \
+				   --column "Docker Image" $LIST)       
+			if [ $? -eq 0 -a -n $IMAGE ]; then
+			CONTNAME=`echo "$IMAGE" | sed 's|.*\/\(.*\)|\1|' | tr '-' '_'`
+			$TERMINAL "docker run -it --name $CONTNAME $IMAGE"
+			fi
+			else
+			$ZENITY_INFO --text="All Images are running"
+			fi
+			else
+			$ZENITY_INFO --text="No Images"
+			fi
+			;;
+		-c|--con)
+			LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
+			SHELL="`docker ps -a -f status=running -f status=exited --format "{{.Command}}"`"	
+			LIST="`docker ps -a -f status=running -f status=exited --format "{{.Names}}"`"
+			if ! [ -z $LIST_ALL ]; then
+			if ! [ -z $LIST ]; then
+			CONTAINER=$($ZENITY --title "Connect to Container" --text="Choose a Container:" \
+					   --column "Docker Container" $LIST)          
+			if [ $? -eq 0 -a -n $CONTAINER ]; then
+			STATUS="`docker inspect $CONTAINER --format "{{.State.Status}}"`"
+			if [ "$STATUS" = "running" ]; then $TERMINAL "docker exec -it $CONTAINER $SHELL"; fi
+			if [ "$STATUS" = "exited" ]; then $TERMINAL "docker start -ai $CONTAINER"; fi
+			fi
+			else
+			$ZENITY_INFO --text="All containers are suspended"
+			fi
+			else
+			$ZENITY_INFO --text="No containers"
+			fi
+			;;
+		-s|--stop)
+			LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
+			LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
+			if ! [ -z $LIST_ALL ]; then
+			if ! [ -z $LIST ]; then
+			CONTAINER=$($ZENITY --title "Stop Container" --text="Choose a Container:" \
+					   --column "Docker Container" --multiple --separator="#" $LIST)          
+			if [ $? -eq 0 -a -n $CONTAINER ]; then
+			CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+			(
+			$DOCKER stop $CONTAINER
+			sleep 1
+			) | $ZENITY_RUN --auto-close --title="Stopping"
+			fi
+			else
+			$ZENITY_INFO --text="No containers running or everything is paused"
+			fi
+			else
+			$ZENITY_INFO --text="No containers"
+			fi
+			;;	
+		-p|--pause)	
+			LIST_ALL="`docker ps -a --format "{{.Names}}"`"		
+			LIST="`docker ps -a -f status=running --format "{{.Names}}"`"
+			if ! [ -z $LIST_ALL ]; then
+			if ! [ -z $LIST ]; then
+			CONTAINER=$($ZENITY --title "Pause Container" --text="Choose a Container:" \
+					   --column "Docker Container" --multiple --separator="#" $LIST)         
+			if [ $? -eq 0 -a -n $CONTAINER ]; then
+			CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+			$DOCKER pause $CONTAINER
+			fi
+			else
+			$ZENITY_INFO --text="No containers running or everything is paused"
+			fi
+			else
+			$ZENITY_INFO --text="No containers"
+			fi
+			;;	
+		-up|--renew)
+			LIST_ALL="`docker ps -a --format "{{.Names}}"`"			
+			LIST="`docker ps -a -f status=paused --format "{{.Names}}"`"
+			if ! [ -z $LIST_ALL ]; then
+			if ! [ -z $LIST ]; then
+			CONTAINER=$($ZENITY --title "Resume Containers" --text="Choose a Container:" \
+					   --column "Docker Container" --multiple --separator="#" $LIST)          
+			if [ $? -eq 0 -a -n $CONTAINER ]; then
+			CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+			$DOCKER unpause $CONTAINER
+			fi
+			else
+			$ZENITY_INFO --text="No containers suspended"
+			fi
+			else
+			$ZENITY_INFO --text="No containers"
+			fi
+			;;							
+		-rc|--rmc)
+			LIST="`docker ps -a --format "{{.Names}}"`"
+			if ! [ -z $LIST ]; then
+			CONTAINER=$($ZENITY --title "Remove Container" --text="Choose a Container:" \
+					   --column "Docker Container" --multiple --separator="#" $LIST)           
+			if [ $? -eq 0 -a -n $CONTAINER ]; then
+			CONTAINER=`echo "$CONTAINER" | tr '#' ' '`
+			$DOCKER rm --force $CONTAINER
+			fi
+			else
+			$ZENITY_INFO --text="No containers"
+			fi
+			;;
+		-ri|--rmi)
+			LIST="`docker images --format "{{.Repository}}"`"
+			if ! [ -z $LIST ]; then
+			IMAGE=$($ZENITY -title "Delete Image" --text="Choose a Image:" \
+				   --column "Docker Image" --multiple --separator="#" $LIST)       
+			if [ $? -eq 0 -a -n $IMAGE ]; then
+			IMAGE=`echo "$IMAGE" | tr '#' ' '`
+			$DOCKER rmi $IMAGE
+			fi
+			else
+			$ZENITY_INFO --text="No Images"
+			fi
+			;;
+		-pu|--pull)
+			IMAGE=$($ZENITY_ENTRY --title "Install Image" --text="Docker Image:" \
+			       --entry-text="") 
+			if [ $? -eq 0 -a -n $IMAGE ]; then
+			( 
+			$DOCKER pull $IMAGE 
+			) | $ZENITY_RUN --title="Installing an image"
+			fi
+			;;
+		*)
+			shift
+			break
+			;;				
+	esac
+	shift
+done
+
+main     
