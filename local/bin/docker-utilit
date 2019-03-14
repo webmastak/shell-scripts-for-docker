@@ -163,13 +163,14 @@ while true; do
 			fi
 			;;
 		-ri|--rmi)
-			LIST="`docker images --format "{{.Repository}}"`"
+			LIST="`docker images --format "{{.ID}}: {{.Repository}}"`"
 			if ! [ -z $LIST ]; then
-			IMAGE=$($ZENITY -title "Delete Image" --text="Choose a Image:" \
-				   --column "Docker Image" --multiple --separator="#" $LIST)       
+			IMAGE=$($ZENITY --hide-column=1 --title "Delete Image" --text="Choose a Image:" \
+				   --column "Image ID" --column "Docker Image" --multiple --separator="#" $LIST)       
 			if [ $? -eq 0 -a -n $IMAGE ]; then
-			IMAGE=`echo "$IMAGE" | tr '#' ' '`
-			$DOCKER rmi $IMAGE
+			IMAGE=`echo "$IMAGE" | tr '#' ' ' | tr ':' ' '`
+			(stdbuf -oL $DOCKER rmi -f $IMAGE) | $ZENITY_RUN \
+			 --title="Deleting" --text="Images"
 			fi
 			else
 			$ZENITY_INFO --text="No Images"
