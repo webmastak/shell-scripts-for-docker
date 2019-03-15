@@ -5,9 +5,9 @@ DOCKER="$(which docker)"
 TERMINAL="gnome-terminal -- zsh -c"
 ICON="$HOME/.local/share/icons/docker.png"
 NAME="--class=$PROGNAME --name=$PROGNAME"
-ZENITY="zenity $NAME --list --hide-header --window-icon=$ICON --width=230 --height=288"
-ZENITY_OUT="zenity $NAME --text-info --window-icon=$ICON --width=800 --height=600"
-ZENITY_ENTRY="zenity $NAME --entry --window-icon=$ICON --width=230 --height=80"
+ZENITY="zenity $NAME --list --hide-header --window-icon=$ICON --width=250 --height=288"
+ZENITY_OUT="zenity $NAME --text-info --window-icon=$ICON --no-wrap --width=980 --height=600"
+ZENITY_ENTRY="zenity $NAME --entry --window-icon=$ICON --width=280 --height=80"
 ZENITY_RUN="zenity $NAME --progress --pulsate --no-cancel --auto-close --window-icon=$ICON"
 ZENITY_INFO="zenity $NAME --info --no-wrap --window-icon=$ICON"
 OUTPUT="/tmp/$(basename "$0").$$"
@@ -31,12 +31,14 @@ cat <<EO | column -s\& -t
 	-rc, --rmc   & delete container
 	-ri, --rmi   & delete image
 	-pu, --pull  & pull image
+	-i,  --img   & installed images		
 EO
 }
 
 main()
 {
-UTIL=$($ZENITY --hide-column=1 --title="Docker Utilities" --text="Select Utility:" \
+UTIL=$($ZENITY --hide-column=1 --width=230 --height=314 \
+      --title="Docker Utilities" --text="Select Utility:" \
       --column="Command" --column="Utility" \
       "$PROGNAME --con" "	Connect" \
       "$PROGNAME --stop" "	Stop" \
@@ -45,7 +47,8 @@ UTIL=$($ZENITY --hide-column=1 --title="Docker Utilities" --text="Select Utility
       "$PROGNAME --run" "	Create container" \
       "$PROGNAME --rmc" "	Remove container" \
       "$PROGNAME --rmi" "	Delete image" \
-      "$PROGNAME --pull" "	Install image")     
+      "$PROGNAME --pull" "	Install image"
+      "$PROGNAME --img" "	Installed Images")     
 exec $UTIL
 }
 
@@ -55,6 +58,18 @@ while true; do
 			usage
 			exit 0
 			;;
+		-i|--img)
+			if ! [ -z "`docker images`" ]; then
+			$DOCKER images | tee >$OUTPUT 
+			if [ -s $OUTPUT ]; then 
+            $ZENITY_OUT --filename=$OUTPUT --title "Installed Images" \
+            --font="DejaVu Sans Mono"
+            fi
+            rm -f $OUTPUT			
+			else
+			$ZENITY_INFO --text="No Images"
+			fi
+			;;			
 		-r|--run)
 			LISTIMAGE="`docker images --format "{{.Repository}}"`"
 			CONTAINER="`docker ps -a --format "{{.Image}}"`"
